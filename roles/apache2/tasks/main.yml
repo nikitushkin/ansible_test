@@ -16,15 +16,15 @@
     - php-gd
     - php-intl
     - php-pear
-    - php5-imagick
-    - php5-imap
+    - php-imagick
+    - php-imap
     - php-pspell
     - php-recode
     - php-xmlrpc
     - php-xsl
-    - php5-mcrypt
-    - php5-common
-    - php5-cli
+    - php-mcrypt
+    - php-common
+    - php-cli
   notify: 
   - start apache2
 
@@ -33,6 +33,7 @@
   template: src=/etc/ansible/roles/apache2/templates/ports.conf dest=/etc/apache2/ports.conf
   template: src=/etc/ansible/roles/apache2/templates/000-default.conf dest=/etc/apache2/sites-available/000-default.conf
   template: src=/etc/ansible/roles/apache2/templates/php.ini dest=/etc/php/apache2/php.ini
+  template: src=/etc/ansible/roles/apache2/templates/mpm_prefork.conf dest=/etc/php/apache2/mods-available/mpm_prefork.conf
   command: a2ensite 000-default
   sudo: yes
   notify: restart apache2
