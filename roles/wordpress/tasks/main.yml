@@ -11,16 +11,27 @@
   sudo: yes
 
 - name: Create WordPress database
-  mysql_db: name={{ wp_db_name }} state=present
+  mysql_db: name="{{ wp_db_name }}"
+            state=present
+            login_user=root
+            login_password="{{ mysql_root_password }}"
   sudo: yes
 
-- name: Create WordPress database user
-  mysql_user: name={{ wp_db_user }} password={{ wp_db_password }} priv={{ wp_db_name }}.*:ALL host='172.31.42.211' state=present
+- name: Create WordPress DB user and grant permissions to WordPress DB
+  mysql_user: name="{{ wp_db_user }}"
+              password="{{ wop_db_password }}"
+              priv="{{ wp_db_name }}.*:ALL"
+              state=present
+              login_user="root"
+              login_password="{{ mysql_root_password }}"
   sudo: yes
 
 - name: Copy WordPress config file
   template: src=wp-config.php dest=/var/www/wp-config.php
   sudo: yes
+
+- name: Create upload folder
+file: path=/var/www/wp-content/uploads  state=directory mode=0755 owner=www-data
 
 - name: Change ownership of WordPress installation
   file: path=/var/www/ owner=www-data group=www-data state=directory recurse=yes
