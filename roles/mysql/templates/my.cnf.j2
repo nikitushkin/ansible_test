@@ -1,32 +1,8 @@
 [mysqld]
 port            = 3306
-bind-address    = {{mysql_address}}
-socket          = /var/run/mysqld/mysqld.sock
-skip-external-locking
-max_allowed_packet = 15M
-key_buffer_size = 64K
-table_open_cache = 8
-sort_buffer_size = 256K
-read_buffer_size = 1024K
-read_rnd_buffer_size = 1024K
-net_buffer_length = 8K
-thread_stack = 512K
-query_cache_type = 1
-query_cache_limit = 2M
-query_cache_min_res_unit = 2k
-query_cache_size = 16M
-tmp_table_size = 16M
-max_heap_table_size = 16M
-wait_timeout = 60
+bind-address    = 172.31.25.87
 max_connections = 5
 max_user_connections = 5
-ignore-builtin-innodb
-default-storage-engine = myisam
-symbolic-links = 0
-performance_schema = 0
-server-id       = 1
-thread_concurrency = 3
-low_priority_updates = 1
 
 [mysqldump]
 quick
@@ -47,4 +23,3 @@ write_buffer = 2M
 
 [mysqlhotcopy]
 interactive-timeout = 60
-
