@@ -12,6 +12,7 @@
   - start nginx
 
 - name: Copy nginx configuration for wordpress
-  template: src=/etc/ansible/roles/nginx/templates/default.conf dest=/etc/nginx/default.conf
+  template: src=/etc/ansible/roles/nginx/templates/default.conf dest=/etc/nginx/nginx.conf
+  template: src=/etc/ansible/roles/nginx/templates/default.site dest=/etc/nginx/sites-available/default
   notify: restart nginx
   sudo: yes

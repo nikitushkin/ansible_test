@@ -25,7 +25,7 @@ define('DB_USER', '{{ wp_db_user }}');
 define('DB_PASSWORD', '{{ wp_db_password }}');
 
 /** MySQL hostname */
-define('DB_HOST', 'ec2-34-242-232-70.eu-west-1.compute.amazonaws.com');
+define('DB_HOST', '{{mysql_address}}');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');

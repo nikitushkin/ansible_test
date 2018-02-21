@@ -25,7 +25,7 @@ wp_admin_email: admin@gmail.com
 # You shouldn't need to change this.
 mysql_root_password: mysql_root_password
 mysql_port: 3306
-mysql_address: 34.242.232.70
+mysql_address: 172.31.25.87
 
 # This is used for the nginx server configuration, but access to the
 # WordPress site is not restricted by a named host.

@@ -1,0 +1,44 @@
+server {
+        listen listen 172.31.36.234:80;
+        root /var/www/;
+        server_name _;
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+	# Proxy Cache Settings
+	proxy_cache STATIC;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Host $host;
+        proxy_pass http://34.245.137.20:3040/;
+        proxy_hide_header      Strict-Transport-Security;
+        proxy_ignore_headers   Set-Cookie;
+        add_header             X-Cache-Status $upstream_cache_status;
+	# Cache configuration
+        proxy_cache_valid 3s;
+        proxy_no_cache $cookie_PHPSESSID;
+        proxy_cache_bypass $cookie_PHPSESSID;
+        proxy_cache_key "$scheme$host$request_uri";
+        add_header X-Cache $upstream_cache_status;
+        proxy_cache_valid      200 60m;
+        proxy_cache_use_stale  error timeout updating http_500 http_502 http_503 http_504;
+        proxy_cache_revalidate on;
+        proxy_cache_lock       on;
+        }
+	 # Enable Cache the file 30 days
+	location ~* .(jpg|png|gif|jpeg|css|mp3|wav|swf|mov|doc|pdf|xls|ppt|docx|pptx|xlsx)$ {
+        proxy_cache_valid 200 120m;
+        expires 30d;
+        access_log off;
+	}
+
+	# Disable Cache for the file type html, json
+	location ~* .(?:manifest|appcache|html?|xml|json)$ {
+        expires -1;
+	}
+
+	location ~ /\.ht {
+        deny all;
+	}
+}

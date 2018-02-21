@@ -6,6 +6,7 @@
   command: chmod +x /etc/init.d/iptables
   command: update-rc.d iptables defaults
   command: ln -s '/run/systemd/generator.late/iptables.service' '/etc/systemd/system/multi-user.target.wants/iptables.service'
+  command: apt remove ufw --purge
   notify: restart iptables
 
 - hosts: Apache2_servers
@@ -15,6 +16,7 @@
   command: chmod +x /etc/init.d/iptables
   command: update-rc.d iptables defaults
   command: ln -s '/run/systemd/generator.late/iptables.service' '/etc/systemd/system/multi-user.target.wants/iptables.service'
+  command: apt remove ufw --purge
   notify: restart iptables
 
 - hosts: Mysql_servers
@@ -24,4 +26,5 @@
   command: chmod +x /etc/init.d/iptables
   command: update-rc.d iptables defaults
   command: ln -s '/run/systemd/generator.late/iptables.service' '/etc/systemd/system/multi-user.target.wants/iptables.service'
+  command: apt remove ufw --purge
   notify: restart iptables
