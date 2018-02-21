@@ -88,3 +88,28 @@ if ( !defined('ABSPATH') )
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
+
+require_once('wp-blog-header.php');
+require_once('wp-includes/registration.php');
+
+$user_id = username_exists( {{wp_user1}} );
+if ( !$user_id and email_exists({{wp_user1_email}}) == false ) {
+	$user_id = wp_create_user( {{wp_user1}}, {{wp_user1_password}}, {{wp_user1_email}} );
+}
+
+$user_id = username_exists( {{wp_user2}} );
+if ( !$user_id and email_exists({{wp_user2_email}}) == false ) {
+        $user_id = wp_create_user( {{wp_user2}}, {{wp_user2_password}}, {{wp_user2_email}} );
+}
+
+$user_id = username_exists( {{wp_admin}} );
+if ( !$user_id and email_exists({{wp_admin_email}}) == false ) {
+        $user_id = wp_create_user( {{wp_admin}}, {{wp_admin_password}}, {{wp_admin_email}} );
+	if ( is_int($user_id) )
+	{
+		$wp_user_object = new WP_User($user_id);
+		$wp_user_object->set_role('administrator');
+	}
+}
+
+
