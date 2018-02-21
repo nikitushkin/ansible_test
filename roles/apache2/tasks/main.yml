@@ -1,0 +1,38 @@
+---
+- hosts: Apache2_servers
+
+- name: update apt repo
+  action: apt update-cache=yes cache_valid_time=3600
+  sudo: yes
+
+- name: Install apache2 web server and another packages
+  apt: name={{ item }} state=present
+  sudo: yes
+  with_items:
+    - apache2
+    - libapache2-mod-php
+    - php-mysql
+    - php-curl
+    - php-gd
+    - php-intl
+    - php-pear
+    - php5-imagick
+    - php5-imap
+    - php-pspell
+    - php-recode
+    - php-xmlrpc
+    - php-xsl
+    - php5-mcrypt
+    - php5-common
+    - php5-cli
+  notify: 
+  - start apache2
+
+- name: Copy apache2 configuration for wordpress and enable default site
+  template: src=/etc/ansible/roles/apache2/templates/default.conf dest=/etc/apache2/apache2.conf
+  template: src=/etc/ansible/roles/apache2/templates/ports.conf dest=/etc/apache2/ports.conf
+  template: src=/etc/ansible/roles/apache2/templates/000-default.conf dest=/etc/apache2/sites-available/000-default.conf
+  template: src=/etc/ansible/roles/apache2/templates/php.ini dest=/etc/php/apache2/php.ini
+  command: a2ensite 000-default
+  sudo: yes
+  notify: restart apache2

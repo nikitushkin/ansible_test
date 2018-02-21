@@ -1,0 +1,27 @@
+---
+- hosts: MySQL_servers
+
+- name: update apt repo
+  action: apt update-cache=yes cache_valid_time=3600
+  sudo: yes
+      
+- name: install mysql-server 
+  apt name=mysql-server state=present
+  sudo: yes
+
+- name: service mysql  
+  action: service name=mysql state=started
+  sudo: yes
+
+- name: Create Mysql configuration file
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  sudo: yes
+  notify:
+  - start mysql
+  sudo: yes
+
+- restart mysql
+
+- name: Start Mysql Service
+  service: name=mysqld state=started enabled=yes
+  sudo: yes

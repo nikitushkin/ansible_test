@@ -1,0 +1,170 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          iptables
+# Should-Start:      iptables
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: iptables rules for linux firewall
+# Description:       iptables rules for linux firewall
+### END INIT INFO
+
+ # update-rc.d iptables default
+ # Invoked from /etc/rc.d/init.d/iptables.
+ # chkconfig: - 60 95
+ # description: Starts and stops the IPTABLES packet filter \
+ # used to provide firewall network services.
+
+ if [ ! -x /sbin/iptables ]; then
+ exit 0
+ fi
+
+ # See how we were called.
+ case "$1" in
+ start)
+ echo -n "Starting Firewalling: "
+
+#=================================================================================================
+ echo "Preparing iptables rules, remove all rules, chain, default policy of the filter to deny..."
+#==================================================================================================
+#=======================
+ echo "Flush all rules"
+#=======================
+ iptables -F
+ iptables -t nat -F
+ iptables -t mangle -F
+ iptables -t raw -F
+ iptables -t filter -F
+#====================================
+ echo "Erase all non-default chains"
+#====================================
+ iptables -X
+ iptables -t nat -X
+ iptables -t mangle -X
+ iptables -t raw -X
+ iptables -t filter -X
+#=============================
+ echo "Erase all containers"
+#=============================
+ iptables -Z
+ iptables -Z -t filter
+ iptables -Z -t nat
+ iptables -Z -t mangle
+#=============================
+ if [ "$1" = "stop" ]
+ then
+     echo "Firewall completely flushed!  Now running with no firewall."
+     exit 0
+ fi
+#===========================
+ echo "Block all packet..."
+#===========================
+ iptables -P INPUT DROP
+ iptables -P OUTPUT DROP
+ iptables -P FORWARD DROP
+ iptables -P PREROUTING DROP
+ iptables -P POSTROUTING DROP
+#==========================
+echo "Input chains..."
+#=========================================================
+iptables -A INPUT -f -j LOG  --log-prefix "In_Fragment_packet_a=DROP: "
+iptables -A INPUT -f -j DROP
+
+iptables -A INPUT -p udp ! -i lo -s 208.67.222.222,208.67.220.220 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+#===========================================
+ echo "DROP INVALID packets immediately..."
+#===========================================
+iptables -A INPUT -p all -m conntrack --ctstate INVALID -j LOG  --log-prefix "In_Invalid_packet_a=DROP: "
+iptables -A INPUT -p all -m conntrack --ctstate INVALID -j DROP
+iptables -A INPUT -p all -m conntrack --ctstate UNTRACKED -j LOG  --log-prefix "In_Untracked_packet_a=DROP: "
+iptables -A INPUT -p all -m conntrack --ctstate UNTRACKED -j DROP
+iptables -A INPUT ! -i lo -p udp -m conntrack --ctstate NEW -j LOG --log-prefix "UDP_new_in_drop: "
+iptables -A INPUT ! -i lo -p udp -m conntrack --ctstate NEW -j DROP
+iptables -A INPUT ! -i lo -p udp -m conntrack --ctstate ESTABLISHED,RELATED --dport 1024:65535 --sport 53 -s 208.67.222.222,208.67.220.220 -j ACCEPT
+iptables -A INPUT ! -i lo -m pkttype --pkt-type MULTICAST -j LOG --log-prefix "Multicast_in_drop: "
+iptables -A INPUT ! -i lo -m pkttype --pkt-type MULTICAST -j DROP
+iptables -A INPUT ! -i lo -m pkttype --pkt-type BROADCAST -j LOG --log-prefix "Broadcast_in_drop: "
+iptables -A INPUT ! -i lo -m pkttype --pkt-type BROADCAST -j DROP
+iptables -A INPUT ! -i lo -m addrtype --src-type ANYCAST -j LOG --log-prefix "Anycast_src_in_drop: "
+iptables -A INPUT ! -i lo -m addrtype --src-type ANYCAST -j DROP
+iptables -A INPUT ! -i lo -m addrtype --dst-type ANYCAST -j LOG --log-prefix "Anycast_dst_in_drop: "
+iptables -A INPUT ! -i lo -m addrtype --dst-type ANYCAST -j DROP
+iptables -A INPUT ! -i lo -m addrtype --src-type UNSPEC -j LOG --log-prefix "Unspec_src_in_drop: "
+iptables -A INPUT ! -i lo -m addrtype --src-type UNSPEC -j DROP
+iptables -A INPUT ! -i lo -m addrtype --dst-type UNSPEC -j LOG --log-prefix "Unspec_dst_in_drop: "
+iptables -A INPUT ! -i lo -m addrtype --dst-type UNSPEC -j DROP
+iptables -A INPUT ! -i lo -m addrtype --src-type THROW -j LOG --log-prefix "Throw_src_in_drop: "
+iptables -A INPUT ! -i lo -m addrtype --src-type THROW -j DROP
+iptables -A INPUT ! -i lo -m addrtype --dst-type THROW -j LOG --log-prefix "Throw_dst_in_drop: "
+iptables -A INPUT ! -i lo -m addrtype --dst-type THROW -j DROP
+iptables -A INPUT ! -i lo -p tcp --syn --dport 22 -m connlimit --connlimit-above 15 -j REJECT --reject-with tcp-reset
+iptables -A INPUT ! -i lo -p tcp --syn --dport 3040 -m connlimit --connlimit-above 5 -j LOG --log-prefix "p3040 conlimit hit 5 DROP "
+iptables -A INPUT ! -i lo -p tcp --syn --dport 3040 -m connlimit --connlimit-above 5 -j DROP
+iptables -A INPUT ! -i lo -p tcp --destination-port 22 -m state --state NEW -j LOG --log-prefix "ssh IN_NEW: "
+iptables -A INPUT ! -i lo -p tcp --destination-port 22 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -p icmp -m state --state NEW -j ACCEPT
+iptables -A INPUT ! -i lo -p udp -m state --state ESTABLISHED -j ACCEPT
+iptables -A INPUT ! -i lo -p icmp -m state --state ESTABLISHED -j ACCEPT
+iptables -A INPUT ! -i lo -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT ! -i lo -p all -j LOG --log-prefix "DROP_IN_all_otcher packet " --log-ip-options --log-tcp-options --log-tcp-sequence --log-uid
+iptables -A INPUT ! -i lo -p all -j DROP
+#==========================================
+echo "Load rules for OUTPUT chain..."
+#==========================================
+iptables -A OUTPUT -m conntrack --ctstate NEW -j LOG --log-prefix "ACCEPT NEW OUT: "
+iptables -A OUTPUT -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
+#===========================================
+ echo "Load rules for Postrouting chain..."
+#===========================================
+iptables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+;;
+ stop)
+#==================================
+ echo -n "Shutting Firewalling: "
+#==================================
+ echo "Flush all rules"
+#=======================
+ iptables -F
+ iptables -t nat -F
+ iptables -t mangle -F
+ iptables -t raw -F
+ iptables -t filter -F
+#====================================
+ echo "Erase all non-default chains"
+#====================================
+ iptables -X
+ iptables -t nat -X
+ iptables -t mangle -X
+ iptables -t raw -X
+ iptables -t filter -X
+#=============================
+ echo "Erase all containers"
+#=============================
+ iptables -Z
+ iptables -Z -t nat
+ iptables -Z -t mangle
+#======================================================
+ echo "Reset the default policy of the filter to drop"
+#======================================================
+ iptables -P INPUT DROP
+ iptables -P OUTPUT DROP
+ iptables -P FORWARD DROP
+ iptables -t mangle -P PREROUTING DROP
+ ;;
+ status)
+ status iptables
+ ;;
+ restart|reload)
+ $0 stop
+ $0 start
+ ;;
+ *)
+
+ echo "Usage: iptables {start|stop|status|restart|reload}"
+ exit 1
+;;
+ esac
+ echo "done"
+
+ exit 0

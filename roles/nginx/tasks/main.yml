@@ -1,0 +1,17 @@
+---
+- hosts: Nginx_servers
+
+- name: update apt repo
+  action: apt update-cache=yes cache_valid_time=3600
+  sudo: yes
+
+- name: Installs nginx web server
+  apt: name=nginx state=present update_cache=true
+  sudo: yes
+  notify: 
+  - start nginx
+
+- name: Copy nginx configuration for wordpress
+  template: src=/etc/ansible/roles/nginx/templates/default.conf dest=/etc/nginx/default.conf
+  notify: restart nginx
+  sudo: yes

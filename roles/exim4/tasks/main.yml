@@ -1,0 +1,19 @@
+---
+- hosts: Exim4_servers
+
+- name: update apt repo
+  action: apt update-cache=yes cache_valid_time=3600
+  sudo: yes
+
+- name: Installs Exim4 server
+  sudo: yes
+  apt: name=exim4 state=present update_cache=true
+  sudo: yes
+  notify: 
+  - start exim4
+
+- name: Copy apache2 configuration for wordpress
+  template: src=/etc/ansible/exim4/templates/update-exim4.conf.conf dest=/etc/exim4/update-exim4.conf.conf
+  notify: 
+  - restart exim4
+  sudo: yes
