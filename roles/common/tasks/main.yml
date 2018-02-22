@@ -1,30 +1,4 @@
 ---
-- hosts: Nginx_servers
-
-- name: Run iptables configuration on Nginx_servers
-  template: src=/etc/ansible/roles/common/files/iptables-nginx dest=/etc/init.d/iptables
-  command: chmod +x /etc/init.d/iptables
-  command: update-rc.d iptables defaults
-  command: ln -s '/run/systemd/generator.late/iptables.service' '/etc/systemd/system/multi-user.target.wants/iptables.service'
-  command: apt remove ufw --purge
-  notify: restart iptables
-
-- hosts: Apache2_servers
-
-- name: Run iptables configuration on Apache2_servers
-  template: src=/etc/ansible/roles/common/files/iptables-apache2 dest=/etc/init.d/iptables
-  command: chmod +x /etc/init.d/iptables
-  command: update-rc.d iptables defaults
-  command: ln -s '/run/systemd/generator.late/iptables.service' '/etc/systemd/system/multi-user.target.wants/iptables.service'
-  command: apt remove ufw --purge
-  notify: restart iptables
-
-- hosts: Mysql_servers
-
-- name: Run iptables configuration on MySQL_servers
-  template: src=/etc/ansible/roles/common/files/iptables-mysql dest=/etc/init.d/iptables
-  command: chmod +x /etc/init.d/iptables
-  command: update-rc.d iptables defaults
-  command: ln -s '/run/systemd/generator.late/iptables.service' '/etc/systemd/system/multi-user.target.wants/iptables.service'
-  command: apt remove ufw --purge
-  notify: restart iptables
+- name: install python
+  raw: apt -y install python-minimal python-simplejson
+  sudo: yes

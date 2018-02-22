@@ -1,14 +1,32 @@
 ---
-- name: Install WordPress, MySQL, Nginx, Apache2, Exim4 and mod_php
-  hosts: all
-  remote_user: ubuntu
-  become: yes
-  become_method: sudo
+  - hosts: all
+    remote_user: ubuntu
+    gather_facts: False
+    sudo : yes
 
-  roles:
-    - apache2
+    roles:
     - common
+
+  - hosts: MySQL_servers
+    remote_user: ubuntu
+    sudo : yes
+
+    roles:
     - mysql
-    - nginx
-    - wordpress
+
+  - hosts: Apache2_servers
+    remote_user: ubuntu
+    sudo : yes
+
+    roles:
+    - apache2
     - exim4
+    - wordpress
+
+  - hosts: Nginx_servers
+    remote_user: ubuntu
+    sudo : yes
+
+    roles:
+    - nginx
+

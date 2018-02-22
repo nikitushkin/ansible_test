@@ -12,8 +12,6 @@
 
 #[Ansible_servers]
 #34.248.18.242 ansible_user=ubuntu
-[Exim4_servers]
-34.245.137.20 ansible_user=ubuntu
 
 [Nginx_servers]
 34.245.75.18 ansible_user=ubuntu
@@ -21,12 +19,8 @@
 [Apache2_servers]
 34.245.137.20 ansible_user=ubuntu
 
-[Wordpress_sites]
-34.245.137.20 ansible_user=ubuntu
-
 [MySQL_servers]
-34.242.232.70 
-#ansible_user=ubuntu
+34.242.106.52 ansible_user=ubuntu
 
 #green.example.com
 #blue.example.com

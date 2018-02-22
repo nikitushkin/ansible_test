@@ -1,9 +1,11 @@
 ---
-- hosts: Apache2_servers
 
 - name: update apt repo
   action: apt update-cache=yes cache_valid_time=3600
   sudo: yes
+
+- name: install python mysql bindings
+  apt: name=python-mysqldb state=installed
 
 - name: Install apache2 web server and another packages
   apt: name={{ item }} state=present
@@ -40,15 +42,39 @@
   template: src=/etc/ansible/roles/apache2/templates/000-default.conf dest=/etc/apache2/sites-available/000-default.conf
   sudo: yes
 
-- name: Copy apache2 configuration for wordpress and enable default site 3
-  template: src=/etc/ansible/roles/apache2/templates/php.ini dest=/etc/php/apache2/php.ini
-  sudo: yes
-
 - name: Copy apache2 configuration for wordpress and enable default site 4
-  template: src=/etc/ansible/roles/apache2/templates/mpm_prefork.conf dest=/etc/php/apache2/mods-available/mpm_prefork.conf
+  template: src=/etc/ansible/roles/apache2/templates/php.ini dest=/etc/php/7.0/apache2/php.ini
   sudo: yes
 
 - name: Copy apache2 configuration for wordpress and enable default site 5
+  template: src=/etc/ansible/roles/apache2/templates/mpm_prefork.conf dest=/etc/apache2/mods-available/mpm_prefork.conf
+  sudo: yes
+
+- name: Copy apache2 configuration for wordpress and enable default site 6
   command: a2ensite 000-default
   sudo: yes
   notify: restart apache2
+
+- name: Run iptables configuration on Apache2_servers 1
+  template: src=/etc/ansible/roles/apache2/files/iptables-apache2 dest=/etc/init.d/iptables
+  sudo: yes
+
+- name: Run iptables configuration on Apache2_servers 2
+  command: chmod +x /etc/init.d/iptables
+  sudo: yes
+
+- name: Run iptables configuration on Apache2_servers 3
+  command: update-rc.d iptables defaults
+  sudo: yes
+
+- name: Run iptables configuration on Apache2_servers 4
+  file: 
+    src: /run/systemd/generator.late/iptables.service
+    dest: /etc/systemd/system/multi-user.target.wants/iptables.service
+    state: link
+  sudo: yes
+
+- name: Run iptables configuration on Apache2_servers 5
+  command: apt -y remove ufw --purge
+  notify: restart iptables
+  sudo: yes

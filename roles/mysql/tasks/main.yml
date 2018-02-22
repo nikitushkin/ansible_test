@@ -1,16 +1,17 @@
 ---
-- hosts: MySQL_servers
 
 - name: update apt repo
   action: apt update-cache=yes cache_valid_time=3600
   sudo: yes
+
+- name: install python mysql bindings
+  apt: name=python-mysqldb state=installed
       
 - debconf:
    name: mysql-server
    question: mysql-server/root_password
    vtype: password
    value: "{{ mysql_root_password }}"
-
 
 - debconf:
    name: mysql-server
@@ -19,7 +20,7 @@
    value: "{{ mysql_root_password }}"
 
 - name: install mysql-server 
-  apt name=mysql-server state=present
+  action: apt name=mysql-server state=present
   sudo: yes
 
 - debconf:
@@ -41,13 +42,51 @@
 
 - name: Create Mysql configuration file
   template: src=my.cnf.j2 dest=/etc/mysql/mysql.cnf
-  sudo: yes
   notify:
   - start mysql
   sudo: yes
 
-- restart mysql
-
 - name: Start Mysql Service
-  service: name=mysqld state=started enabled=yes
+  service: name=mysql state=started enabled=yes
   sudo: yes
+
+- name: Create WordPress database
+  mysql_db: name="{{ wp_db_name }}"
+            state=present
+            login_user=root
+            login_password="{{ mysql_root_password }}"
+  sudo: yes
+
+- name: Create WordPress DB user and grant permissions to WordPress DB
+  mysql_user: name="{{ wp_db_user }}"
+              password="{{ wp_db_password }}"
+              priv="{{ wp_db_name }}.*:ALL"
+              state=present
+              login_user="root"
+              login_password="{{ mysql_root_password }}"
+  sudo: yes
+
+- name: Run iptables configuration on MySQL_servers 1
+  template: src=/etc/ansible/roles/mysql/files/iptables-mysql dest=/etc/init.d/iptables
+  sudo: yes
+
+- name: Run iptables configuration on MySQL_servers 2
+  command: chmod +x /etc/init.d/iptables
+  sudo: yes
+
+- name: Run iptables configuration on MySQL_servers 3
+  command: update-rc.d iptables defaults
+  sudo: yes
+
+- name: Run iptables configuration on MySQL_servers 4
+  file:
+    src: /run/systemd/generator.late/iptables.service
+    dest: /etc/systemd/system/multi-user.target.wants/iptables.service
+    state: link
+  sudo: yes
+
+- name: Run iptables configuration on MySQL_servers 5
+  command: apt -y remove ufw --purge
+  notify: restart iptables
+  sudo: yes
+

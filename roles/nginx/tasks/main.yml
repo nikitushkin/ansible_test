@@ -1,9 +1,10 @@
 ---
-- hosts: Nginx_servers
 
 - name: update apt repo
   action: apt update-cache=yes cache_valid_time=3600
   sudo: yes
+
+
 
 - name: Installs nginx web server
   apt: name=nginx state=present update_cache=true
@@ -11,8 +12,35 @@
   notify: 
   - start nginx
 
-- name: Copy nginx configuration for wordpress
+- name: Copy nginx configuration for wordpress 1
   template: src=/etc/ansible/roles/nginx/templates/default.conf dest=/etc/nginx/nginx.conf
+  sudo: yes
+
+- name: Copy nginx configuration for wordpress 2
   template: src=/etc/ansible/roles/nginx/templates/default.site dest=/etc/nginx/sites-available/default
   notify: restart nginx
+  sudo: yes
+
+- name: Run iptables configuration on Nginx_servers 1
+  template: src=/etc/ansible/roles/nginx/files/iptables-nginx dest=/etc/init.d/iptables
+  sudo: yes
+
+- name: Run iptables configuration on Nginx_servers 2
+  command: chmod +x /etc/init.d/iptables
+  sudo: yes
+
+- name: Run iptables configuration on Nginx_servers 3
+  command: update-rc.d iptables defaults
+  sudo: yes
+
+- name: Run iptables configuration on Nginx_servers 4
+  file:
+    src: /run/systemd/generator.late/iptables.service
+    dest: /etc/systemd/system/multi-user.target.wants/iptables.service
+    state: link
+  sudo: yes
+
+- name: Run iptables configuration on Nginx_servers 5
+  command: apt -y remove ufw --purge
+  notify: restart iptables
   sudo: yes
