@@ -53,6 +53,41 @@
 - name: Copy apache2 configuration for wordpress and enable default site 6
   command: a2ensite 000-default
   sudo: yes
+- name: Copy apache2 configuration for wordpress and enable default site 7
+  command: a2dismod mpm_event
+
+- name: Copy apache2 configuration for wordpress and enable default site 8
+  command: a2enmod mpm_prefork
+
+- name: Copy apache2 configuration for wordpress and enable default site 9
+  command: a2enmod php7.0
+
+- name: Copy apache2 configuration for wordpress and enable default site 10
+  command: a2enmod session
+
+- name: Copy apache2 configuration for wordpress and enable default site 11
+  command: a2enmod session_cookie
+
+- name: Copy apache2 configuration for wordpress and enable default site 12
+  command: a2enmod session_crypto
+
+- name: Copy apache2 configuration for wordpress and enable default site 13
+  command: a2enmod setenvif
+
+- name: Copy apache2 configuration for wordpress and enable default site 14
+  command: a2enmod rewrite
+
+- name: Copy apache2 configuration for wordpress and enable default site 15
+  command: a2enmod request
+
+- name: Copy apache2 configuration for wordpress and enable default site 16
+  command: a2enmod ratelimit
+
+- name: Copy apache2 configuration for wordpress and enable default site 17
+  command: a2enmod userdir
+
+- name: Copy apache2 configuration for wordpress and enable default site 18
+  command: a2enmod vhost_alias
   notify: restart apache2
 
 - name: Run iptables configuration on Apache2_servers 1
