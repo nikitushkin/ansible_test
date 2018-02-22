@@ -25,7 +25,8 @@
 34.245.137.20 ansible_user=ubuntu
 
 [MySQL_servers]
-34.242.232.70 ansible_user=ubuntu
+34.242.232.70 
+#ansible_user=ubuntu
 
 #green.example.com
 #blue.example.com

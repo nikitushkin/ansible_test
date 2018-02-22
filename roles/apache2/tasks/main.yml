@@ -30,10 +30,25 @@
 
 - name: Copy apache2 configuration for wordpress and enable default site
   template: src=/etc/ansible/roles/apache2/templates/default.conf dest=/etc/apache2/apache2.conf
+  sudo: yes
+
+- name: Copy apache2 configuration for wordpress and enable default site 2
   template: src=/etc/ansible/roles/apache2/templates/ports.conf dest=/etc/apache2/ports.conf
+  sudo: yes
+
+- name: Copy apache2 configuration for wordpress and enable default site 3
   template: src=/etc/ansible/roles/apache2/templates/000-default.conf dest=/etc/apache2/sites-available/000-default.conf
+  sudo: yes
+
+- name: Copy apache2 configuration for wordpress and enable default site 3
   template: src=/etc/ansible/roles/apache2/templates/php.ini dest=/etc/php/apache2/php.ini
+  sudo: yes
+
+- name: Copy apache2 configuration for wordpress and enable default site 4
   template: src=/etc/ansible/roles/apache2/templates/mpm_prefork.conf dest=/etc/php/apache2/mods-available/mpm_prefork.conf
+  sudo: yes
+
+- name: Copy apache2 configuration for wordpress and enable default site 5
   command: a2ensite 000-default
   sudo: yes
   notify: restart apache2
