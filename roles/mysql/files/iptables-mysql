@@ -103,6 +103,8 @@ iptables -A INPUT ! -i lo -p tcp --syn --dport 3306 -m connlimit --connlimit-abo
 iptables -A INPUT ! -i lo -p tcp --syn --dport 3306 -m connlimit --connlimit-above 5 -j DROP
 iptables -A INPUT ! -i lo -p tcp --destination-port 22 -m state --state NEW -j LOG --log-prefix "ssh IN_NEW: "
 iptables -A INPUT ! -i lo -p tcp --destination-port 22 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT ! -i lo -p tcp --destination-port 3306 -m state --state NEW -j LOG --log-prefix "mysql IN_NEW: "
+iptables -A INPUT ! -i lo -p tcp --destination-port 3306 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p icmp -m state --state NEW -j ACCEPT
 iptables -A INPUT ! -i lo -p udp -m state --state ESTABLISHED -j ACCEPT
 iptables -A INPUT ! -i lo -p icmp -m state --state ESTABLISHED -j ACCEPT
