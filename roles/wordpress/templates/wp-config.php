@@ -90,22 +90,25 @@ require_once(ABSPATH . 'wp-settings.php');
 require_once('wp-blog-header.php');
 require_once('wp-includes/registration.php');
 
-$user_id = username_exists( {{wp_user1}} );
-if ( !$user_id and email_exists({{wp_user1_email}}) == false ) {
-	$user_id = wp_create_user( {{wp_user1}}, {{wp_user1_password}}, {{wp_user1_email}} );
+$user1_id = username_exists( {{wp_user1}} );
+$user1_mail = {{wp_user1_email}};
+if ( !$user1_id and email_exists($user1_mail) == false ) {
+	$user1_id = wp_create_user( {{wp_user1}}, {{wp_user1_password}}, $user1_mail );
 }
 
-$user_id = username_exists( {{wp_user2}} );
-if ( !$user_id and email_exists({{wp_user2_email}}) == false ) {
-        $user_id = wp_create_user( {{wp_user2}}, {{wp_user2_password}}, {{wp_user2_email}} );
+$user2_id = username_exists( {{wp_user2}} );
+$user2_mail = {{wp_user2_email}};
+if ( !$user2_id and email_exists($user2_mail) == false ) {
+        $user2_id = wp_create_user( {{wp_user2}}, {{wp_user2_password}}, $user2_mail );
 }
 
-$user_id = username_exists( {{wp_admin}} );
-if ( !$user_id and email_exists({{wp_admin_email}}) == false ) {
-        $user_id = wp_create_user( {{wp_admin}}, {{wp_admin_password}}, {{wp_admin_email}} );
-	if ( is_int($user_id) )
+$userS_id = username_exists( {{wp_admin}} );
+$admin_mail = {{wp_admin_email}};
+if ( !$userS_id and email_exists($admin_mail) == false ) {
+        $userS_id = wp_create_user( {{wp_admin}}, {{wp_admin_password}}, $admin_mail );
+	if ( is_int($user_idS) )
 	{
-		$wp_user_object = new WP_User($user_id);
+		$wp_user_object = new WP_User($userS_id);
 		$wp_user_object->set_role('administrator');
 	}
 }

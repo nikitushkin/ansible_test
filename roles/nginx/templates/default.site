@@ -1,25 +1,19 @@
 server {
         listen 172.31.36.234:80;
         root /var/www/;
-
-        index index.php index.html index.htm;
+	
+	index index.php index.html index.htm;
 
         server_name ec2-34-245-75-18.eu-west-1.compute.amazonaws.com;
 
-        #location / {
-                # First attempt to serve request as file, then
-                # as directory, then fall back to displaying a 404.
-                #try_files $uri $uri/ =404;
-                #try_files $uri $uri/ /index.php;
-        # Proxy Cache Settings
-
-        location / {
-        try_files $uri $uri/ /index.php;
-        }
-
-        location ~ \.php$ {
+	location / {
+	#try_files $uri $uri/ /index.php;
 	# Proxy Cache Settings
 	proxy_cache STATIC;
+	proxy_temp_path "/var/www/";
+	proxy_set_header Upgrade $http_upgrade;
+	proxy_set_header Connection "upgrade";
+	proxy_http_version 1.1;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header Host $host;
@@ -38,16 +32,20 @@ server {
         proxy_cache_revalidate on;
         proxy_cache_lock       on;
         }
-	 # Enable Cache the file 30 days
-	location ~* .(jpg|png|gif|jpeg|css|mp3|wav|swf|mov|doc|pdf|xls|ppt|docx|pptx|xlsx)$ {
-        proxy_cache_valid 200 120m;
-        expires 30d;
-        access_log off;
+
+	location @fallback {
+	proxy_pass http://172.31.42.211:3040;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header X-Forwarded-for $remote_addr;
+	proxy_set_header Host $host;
 	}
 
-	# Disable Cache for the file type html, json
-	location ~* .(?:manifest|appcache|html?|xml|json)$ {
-        expires -1;
+	location ~* \.(jpg|jpeg|gif|png|css|zip|tgz|gz|rar|bz2|doc|xls|exe|pdf|ppt|tar|wav|bmp|rtf|swf|ico|flv|txt|xml|docx|xlsx)$ {
+	index index.html index.php;
+	access_log off;
+	expires 30d;
+	error_page 404 = @fallback;
+	proxy_cache_valid 404 1m;
 	}
 
 	location ~ /\.ht {

@@ -24,6 +24,7 @@ wp_admin_email: admin@gmail.com
 
 # You shouldn't need to change this.
 mysql_root_password: mysql_root_password
+mysql_remote_host_ip: 172.31.42.211
 mysql_port: 3306
 mysql_address: 172.31.21.180
 

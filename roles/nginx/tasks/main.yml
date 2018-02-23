@@ -16,6 +16,10 @@
   template: src=/etc/ansible/roles/nginx/templates/default.conf dest=/etc/nginx/nginx.conf
   sudo: yes
 
+- name: Change ownership of Nginx www path
+  file: path=/var/www/ owner=www-data group=www-data state=directory recurse=yes
+  sudo: yes
+
 - name: Copy nginx configuration for wordpress 2
   template: src=/etc/ansible/roles/nginx/templates/default.site dest=/etc/nginx/sites-available/default
   notify: restart nginx

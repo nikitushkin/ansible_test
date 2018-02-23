@@ -99,8 +99,8 @@ iptables -A INPUT ! -i lo -m addrtype --src-type THROW -j DROP
 iptables -A INPUT ! -i lo -m addrtype --dst-type THROW -j LOG --log-prefix "Throw_dst_in_drop: "
 iptables -A INPUT ! -i lo -m addrtype --dst-type THROW -j DROP
 iptables -A INPUT ! -i lo -p tcp --syn --dport 22 -m connlimit --connlimit-above 15 -j REJECT --reject-with tcp-reset
-iptables -A INPUT ! -i lo -p tcp --syn --dport 80 -m connlimit --connlimit-above 5 -j LOG --log-prefix "p80 conlimit hit 5 DROP "
-iptables -A INPUT ! -i lo -p tcp --syn --dport 80 -m connlimit --connlimit-above 5 -j DROP
+iptables -A INPUT ! -i lo -p tcp --syn --dport 80 -m connlimit --connlimit-above 15 -j LOG --log-prefix "p80 conlimit hit 15 DROP "
+iptables -A INPUT ! -i lo -p tcp --syn --dport 80 -m connlimit --connlimit-above 15 -j DROP
 iptables -A INPUT ! -i lo -p tcp --destination-port 80 -m state --state NEW -j LOG --log-prefix "http IN_NEW: "
 iptables -A INPUT ! -i lo -p tcp --destination-port 80 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT ! -i lo -p tcp --destination-port 22 -m state --state NEW -j LOG --log-prefix "ssh IN_NEW: "
