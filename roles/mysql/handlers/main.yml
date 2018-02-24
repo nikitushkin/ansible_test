@@ -4,6 +4,3 @@
 
 - name: start mysql
   service: name=mysql state=started
-
-- name: restart iptables
-  service: name=iptables state=restarted

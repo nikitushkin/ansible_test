@@ -4,7 +4,7 @@ server {
 	
 	index index.php index.html index.htm;
 
-        server_name ec2-34-245-75-18.eu-west-1.compute.amazonaws.com;
+        server_name ec2-34-244-58-215.eu-west-1.compute.amazonaws.com;
 
 	location / {
 	#try_files $uri $uri/ /index.php;

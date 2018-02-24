@@ -36,7 +36,7 @@
    vtype: password
    value: "{{ mysql_root_password }}"
 
-- name: service mysql  
+- name: Start service mysql  
   action: service name=mysql state=started
   sudo: yes
 
@@ -61,33 +61,35 @@
   mysql_user: name="{{ wp_db_user }}"
               password="{{ wp_db_password }}"
               priv="{{ wp_db_name }}.*:ALL"
-              host={{ mysql_remote_host_ip }}
+              host="{{ mysql_remote_host_ip }}"
               state=present
               login_user="root"
               login_password="{{ mysql_root_password }}"
   sudo: yes
 
-- name: Run iptables configuration on MySQL_servers 1
+- name: Copy iptables configuration for MySQL_servers
   template: src=/etc/ansible/roles/mysql/files/iptables-mysql dest=/etc/init.d/iptables
   sudo: yes
 
-- name: Run iptables configuration on MySQL_servers 2
+- name: Run iptables configuration exec mode for MySQL_servers
   command: chmod +x /etc/init.d/iptables
   sudo: yes
 
-- name: Run iptables configuration on MySQL_servers 3
+- name: Add iptables service for MySQL_servers
   command: update-rc.d iptables defaults
   sudo: yes
 
-- name: Run iptables configuration on MySQL_servers 4
+- name: Create symlink iptables service for MySQL_servers
   file:
     src: /run/systemd/generator.late/iptables.service
     dest: /etc/systemd/system/multi-user.target.wants/iptables.service
     state: link
   sudo: yes
 
-- name: Run iptables configuration on MySQL_servers 5
+- name: Remove ufw
   command: apt -y remove ufw --purge
-  notify: restart iptables
   sudo: yes
 
+- name: Reboot after iptables configuration MySQL_servers
+  command: shutdown -r -t 15
+  sudo: yes

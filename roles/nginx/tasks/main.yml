@@ -4,15 +4,13 @@
   action: apt update-cache=yes cache_valid_time=3600
   sudo: yes
 
-
-
 - name: Installs nginx web server
   apt: name=nginx state=present update_cache=true
   sudo: yes
   notify: 
   - start nginx
 
-- name: Copy nginx configuration for wordpress 1
+- name: Copy nginx configuration
   template: src=/etc/ansible/roles/nginx/templates/default.conf dest=/etc/nginx/nginx.conf
   sudo: yes
 
@@ -20,31 +18,34 @@
   file: path=/var/www/ owner=www-data group=www-data state=directory recurse=yes
   sudo: yes
 
-- name: Copy nginx configuration for wordpress 2
+- name: Copy nginx site configuration
   template: src=/etc/ansible/roles/nginx/templates/default.site dest=/etc/nginx/sites-available/default
   notify: restart nginx
   sudo: yes
 
-- name: Run iptables configuration on Nginx_servers 1
+- name: Copy iptables configuration on Nginx_servers
   template: src=/etc/ansible/roles/nginx/files/iptables-nginx dest=/etc/init.d/iptables
   sudo: yes
 
-- name: Run iptables configuration on Nginx_servers 2
+- name: Set exec iptables for Nginx_servers
   command: chmod +x /etc/init.d/iptables
   sudo: yes
 
-- name: Run iptables configuration on Nginx_servers 3
+- name: Add iptables service for Nginx_servers
   command: update-rc.d iptables defaults
   sudo: yes
 
-- name: Run iptables configuration on Nginx_servers 4
+- name: Create symlink iptables service for Nginx_servers
   file:
     src: /run/systemd/generator.late/iptables.service
     dest: /etc/systemd/system/multi-user.target.wants/iptables.service
     state: link
   sudo: yes
 
-- name: Run iptables configuration on Nginx_servers 5
+- name: Remove ufw
   command: apt -y remove ufw --purge
-  notify: restart iptables
+  sudo: yes
+
+- name: Reboot after iptables configuration Nginx_servers
+  command: shutdown -r -t 15
   sudo: yes

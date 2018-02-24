@@ -30,86 +30,86 @@
   notify: 
   - start apache2
 
-- name: Copy apache2 configuration for wordpress and enable default site
+- name: Copy apache2 configuration
   template: src=/etc/ansible/roles/apache2/templates/default.conf dest=/etc/apache2/apache2.conf
   sudo: yes
 
-- name: Copy apache2 configuration for wordpress and enable default site 2
+- name: Copy apache2 port configuretion
   template: src=/etc/ansible/roles/apache2/templates/ports.conf dest=/etc/apache2/ports.conf
   sudo: yes
 
-- name: Copy apache2 configuration for wordpress and enable default site 3
+- name: Copy apache2 configuration default site
   template: src=/etc/ansible/roles/apache2/templates/000-default.conf dest=/etc/apache2/sites-available/000-default.conf
   sudo: yes
 
-- name: Copy apache2 configuration for wordpress and enable default site 4
+- name: Copy apache2 php configuration
   template: src=/etc/ansible/roles/apache2/templates/php.ini dest=/etc/php/7.0/apache2/php.ini
   sudo: yes
 
-- name: Copy apache2 configuration for wordpress and enable default site 5
+- name: Copy apache2 prefork configuration
   template: src=/etc/ansible/roles/apache2/templates/mpm_prefork.conf dest=/etc/apache2/mods-available/mpm_prefork.conf
   sudo: yes
 
-- name: Copy apache2 configuration for wordpress and enable default site 6
+- name: Enable default site
   command: a2ensite 000-default
   sudo: yes
-- name: Copy apache2 configuration for wordpress and enable default site 7
+
+- name: Enable apache2 module mpm_event
   command: a2dismod mpm_event
 
-- name: Copy apache2 configuration for wordpress and enable default site 8
+- name: Enable apache2 module mpm_prefork
   command: a2enmod mpm_prefork
 
-- name: Copy apache2 configuration for wordpress and enable default site 9
+- name: Enable apache2 module php7.0
   command: a2enmod php7.0
 
-- name: Copy apache2 configuration for wordpress and enable default site 10
+- name: Enable apache2 module session
   command: a2enmod session
 
-- name: Copy apache2 configuration for wordpress and enable default site 11
+- name: Enable apache2 module session_cookie
   command: a2enmod session_cookie
 
-- name: Copy apache2 configuration for wordpress and enable default site 12
+- name: Enable apache2 module session_crypto
   command: a2enmod session_crypto
 
-- name: Copy apache2 configuration for wordpress and enable default site 13
+- name: Enable apache2 module setenvif
   command: a2enmod setenvif
 
-- name: Copy apache2 configuration for wordpress and enable default site 14
+- name: Enable apache2 module rewrite
   command: a2enmod rewrite
 
-- name: Copy apache2 configuration for wordpress and enable default site 15
+- name: Enable apache2 module request
   command: a2enmod request
 
-- name: Copy apache2 configuration for wordpress and enable default site 16
+- name: Enable apache2 module ratelimit
   command: a2enmod ratelimit
 
-- name: Copy apache2 configuration for wordpress and enable default site 17
+- name: Enable apache2 module userdir
   command: a2enmod userdir
 
-- name: Copy apache2 configuration for wordpress and enable default site 18
+- name: Enable apache2 module vhost_alias
   command: a2enmod vhost_alias
   notify: restart apache2
 
-- name: Run iptables configuration on Apache2_servers 1
+- name: Run copy iptables configuration for Apache2_servers
   template: src=/etc/ansible/roles/apache2/files/iptables-apache2 dest=/etc/init.d/iptables
   sudo: yes
 
-- name: Run iptables configuration on Apache2_servers 2
+- name: Run exec mode for iptables on Apache2_servers
   command: chmod +x /etc/init.d/iptables
   sudo: yes
 
-- name: Run iptables configuration on Apache2_servers 3
+- name: Run add service iptables configuration on Apache2_servers
   command: update-rc.d iptables defaults
   sudo: yes
 
-- name: Run iptables configuration on Apache2_servers 4
+- name: Run simlink for iptables service configuration on Apache2_servers
   file: 
     src: /run/systemd/generator.late/iptables.service
     dest: /etc/systemd/system/multi-user.target.wants/iptables.service
     state: link
   sudo: yes
 
-- name: Run iptables configuration on Apache2_servers 5
+- name: Remove ufw
   command: apt -y remove ufw --purge
-  notify: restart iptables
   sudo: yes

@@ -10,7 +10,7 @@
   notify: 
   - start exim4
 
-- name: Copy apache2 configuration for wordpress
+- name: Copy exim4 configuration and restart exim4
   template: src=/etc/ansible/roles/exim4/templates/update-exim4.conf.conf dest=/etc/exim4/update-exim4.conf.conf
   notify: 
   - restart exim4

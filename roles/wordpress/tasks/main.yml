@@ -8,13 +8,50 @@
   command: chdir=/var/www/ /bin/tar xvf wordpress-4.9.4.tar.gz
   sudo: yes
 
-- name: Copy WordPress config file
-  template: src=wp-config.php dest=/var/www/wordpress/wp-config.php
-  sudo: yes
-
 - name: Create upload folder
   file: path=/var/www/wordpress/wp-content/uploads state=directory mode=0755 owner=www-data
 
 - name: Change ownership of WordPress installation
   file: path=/var/www/ owner=www-data group=www-data state=directory recurse=yes
+  sudo: yes
+
+- name: Download Wp_CLI
+  get_url: url=https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar dest=/usr/local/bin/wp
+  sudo: yes
+
+- name: Set exe to wp-cli
+  command: chmod +x /usr/local/bin/wp
+  sudo: yes
+
+- name: Remove WordPress config
+  command: rm -f /var/www/wordpress/wp-config.php
+  sudo: yes
+
+- name: Configure WordPress
+  command: sudo -u www-data -- wp core config --path="{{wp_dir}}" --dbname="{{wp_db_name}}" --dbuser="{{wp_db_user}}" --dbpass="{{wp_db_password}}" --dbprefix="{{wp_db_prefix}}" --dbhost="{{mysql_address}}"
+  sudo: no
+
+- name: Install WordPress tables with admin user
+  command: sudo -u www-data -- wp core install --url="{{wp_url}}" --title="{{wp_site_title}}" --admin_user="{{wp_admin}}" --admin_password="{{wp_admin_password}}" --admin_email="{{wp_admin_email}}"
+  args:
+      chdir: "{{wp_dir}}"
+  when: wordpress_is_installed|failed
+  sudo: no
+
+- name: Create user1
+  command: sudo -u www-data -- wp user create {{wp_user1}} {{wp_user1_email}} --role="author" --user_pass="{{wp_user1_password}}"
+  args:
+      chdir: "{{wp_dir}}"
+  when: wordpress_is_installed|failed
+  sudo: no
+
+- name: Create user2
+  command: sudo -u www-data -- wp user create {{wp_user2}} {{wp_user2_email}} --role="author" --user_pass="{{wp_user2_password}}"
+  args:
+      chdir: "{{wp_dir}}"
+  when: wordpress_is_installed|failed
+  sudo: no
+
+- name: Reboot after Wordpress and iptables configuration Apache2_servers
+  command: shutdown -r -t 15
   sudo: yes

@@ -14,13 +14,13 @@
 #34.248.18.242 ansible_user=ubuntu
 
 [Nginx_servers]
-34.245.75.18 ansible_user=ubuntu
+34.244.58.215 ansible_user=ubuntu
 
 [Apache2_servers]
-34.245.137.20 ansible_user=ubuntu
+52.17.85.164 ansible_user=ubuntu
 
 [MySQL_servers]
-34.242.106.52 ansible_user=ubuntu
+34.252.179.130 ansible_user=ubuntu
 
 #green.example.com
 #blue.example.com
